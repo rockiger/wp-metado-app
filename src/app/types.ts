@@ -44,6 +44,7 @@ export type Task = {
   id: Scalars['ID']
   description?: Maybe<Scalars['String']>
   finishedAt?: Maybe<Scalars['DateTime']>
+  projectId: Scalars['Int']
   title: Scalars['String']
   createdBy: User
   updatedBy: User

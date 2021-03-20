@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import './utils/globals'
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client'
 import App from './app/App'
 import reportWebVitals from './reportWebVitals'

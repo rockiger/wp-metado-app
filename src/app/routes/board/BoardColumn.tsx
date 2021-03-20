@@ -62,67 +62,6 @@ export function BoardColumn({
         <Spacer />
         <Label round>{col.taskIds.length}</Label>
       </ColumnTitle>
-      <Droppable droppableId={`${index}`}>
-        {(provided) => (
-          <Tasks
-            className="list-content"
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              {!_.isEmpty(tasks) &&
-                col.taskIds.map((id, index) => {
-                  const task = tasks[id]
-                  // console.log({ noOfTasks: col.noOfTasksToShow, index });
-                  if (!task) {
-                    // console.log('Missing Task in Board. Task-Id:', id);
-                    return null
-                  }
-                  if (col.noOfTasksToShow && col.noOfTasksToShow < index) {
-                    return null
-                  }
-                  const project = projects[task.project]
-                  return (
-                    <Draggable draggableId={id} key={id} index={index}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                        >
-                          <Task key={id} onClick={() => handleClickTask(task)}>
-                            <CardTitle>{task.title}</CardTitle>
-                            <CardFooter>
-                              <Spacer />
-                              {project.type === 'github' && (
-                                <Label color="black">
-                                  <GithubLogo size="1.5rem" />
-                                  {project.name}
-                                </Label>
-                              )}
-                              {project.type === 'googletasks' && (
-                                <Label color="#3f8ef1">
-                                  <LogoWrapper>
-                                    <LogoImg
-                                      src={GoogleTasksLogoSrc}
-                                      alt="Google Tasks Logo"
-                                    />
-                                  </LogoWrapper>
-                                  {project.name}
-                                </Label>
-                              )}
-                            </CardFooter>
-                          </Task>
-                        </div>
-                      )}
-                    </Draggable>
-                  )
-                })}
-              {provided.placeholder}
-            </div>
-          </Tasks>
-        )}
-      </Droppable>
     </Column>
   )
 }

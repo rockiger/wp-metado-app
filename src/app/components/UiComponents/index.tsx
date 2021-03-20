@@ -8,7 +8,7 @@ export * from './Step'
 
 export const Card = styled.div`
   background-color: white;
-  border: 1px solid ${(p) => p.theme.palette.grey[300]};
+  border: 1px solid lightgrey;
   border-radius: 4px;
   margin-bottom: 1.6rem;
   padding: 4.8rem;

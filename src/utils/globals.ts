@@ -3,7 +3,7 @@
  * Right now it is only lodash and the thread helper function to extend
  * javascript
  */
-import _ from 'lodash'
+import lodash from 'lodash'
 
 /**
  * Evaluates the given forms in order, the result of each form will be added last or first in the next form.
@@ -41,8 +41,8 @@ export const trace = (x) => {
   return x
 }
 
-_.mixin({ thread, trace })
+lodash.mixin({ thread, trace })
 
 declare global {
-  var _: _
+  var _: typeof lodash
 }
