@@ -17,7 +17,7 @@ import styled from 'styled-components/macro'
 import media from 'styled-media-query'
 import { Buffer } from 'styled-icons/simple-icons'
 
-import { Board, Task } from 'app/types'
+import { Board, Project, ProjectMap, Task, TaskMap } from 'app/types'
 import { BoardColumn } from './BoardColumn'
 import { AddCard } from './AddTask'
 
@@ -36,6 +36,7 @@ const BOARD = gql`
         taskIds
       }
       projects {
+        id
         title
         type
         meta {
@@ -97,11 +98,24 @@ export function BoardPage() {
       </PageHeader>
       <BoardContent ref={editDialogFinalFocusRef}>
         {!_.isEmpty(board.projects) &&
-          board.columns.map((col) => {
+          [
+            board.columns[1],
+            board.columns[2],
+            board.columns[3],
+            board.columns[0],
+          ].map((col) => {
             if (col.title === 'Backlog' && !board.showBacklog) {
               return null
             }
-            return <div key={col.id}>Column {col.title}</div>
+            return (
+              <BoardColumn
+                col={col}
+                handleClickTask={(task: Task) => {}}
+                projects={createProjectMap(board.projects)}
+                setNoOfTasksToShow={(colTitle: string, noOfTasks: number) => {}}
+                tasks={createTaskMap(board.tasks)}
+              />
+            )
           })}
 
         {board.id && _.isEmpty(board.projects) && (
@@ -133,6 +147,10 @@ export function BoardPage() {
     </Page>
   )
 }
+
+const createTaskMap = (taskList: Task[]): TaskMap => _.keyBy(taskList, 'id')
+const createProjectMap = (projectList: Project[]): ProjectMap =>
+  _.keyBy(projectList, 'id')
 
 export const BoardContent = styled(Row)<{ ref: any }>`
   align-items: flex-start;

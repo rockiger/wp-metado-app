@@ -32,7 +32,6 @@ import {
 interface Props {
   col: ColumnType
   handleClickTask: (task: TaskType) => void
-  index: number
   projects: ProjectMap
   setNoOfTasksToShow: (colTitle: string, noOfTasks: number) => void
   tasks: TaskMap
@@ -41,7 +40,6 @@ interface Props {
 export function BoardColumn({
   col,
   handleClickTask,
-  index,
   projects,
   setNoOfTasksToShow,
   tasks,
@@ -62,6 +60,35 @@ export function BoardColumn({
         <Spacer />
         <Label round>{col.taskIds.length}</Label>
       </ColumnTitle>
+      {col.taskIds.map((id, index) => {
+        const task = tasks[id]
+        if (!task) {
+          return null
+        }
+        const project = projects[task.projectId]
+        return (
+          <Task key={id} onClick={() => handleClickTask(task)}>
+            <CardTitle>{task.title}</CardTitle>
+            <CardFooter>
+              <Spacer />
+              {project.type === 'github' && (
+                <Label color="black">
+                  <GithubLogo size="1.5rem" />
+                  {project.title}
+                </Label>
+              )}
+              {project.type === 'googletasks' && (
+                <Label color="#3f8ef1">
+                  <LogoWrapper>
+                    <LogoImg src={GoogleTasksLogoSrc} alt="Google Tasks Logo" />
+                  </LogoWrapper>
+                  {project.title}
+                </Label>
+              )}
+            </CardFooter>
+          </Task>
+        )
+      })}
     </Column>
   )
 }
@@ -139,7 +166,7 @@ const ColumnTitle = styled.h2`
 `
 
 const ColumnIcon = styled(RadioCircle)`
-  color: ${(p) => p.theme.palette.grey[600]};
+  color: lightgrey};
   margin-right: 0.3rem;
 `
 
@@ -150,7 +177,8 @@ const Tasks = styled.div`
 const Task = styled(Card)`
   padding: 1.6rem;
   &:hover {
-    box-shadow: ${(p) => p.theme.shadows[3]};
+    box-shadow: rgb(0 0 0 / 10%) 0px 1px 8px 0px,
+      rgb(0 0 0 / 7%) 0px 3px 4px 0px, rgb(0 0 0 / 6%) 0px 3px 3px -2px;
   }
   &:last-child {
     margin-bottom: 1.6rem;

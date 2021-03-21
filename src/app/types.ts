@@ -28,7 +28,7 @@ export type Board = {
   updatedBy: User
   createdAt: Scalars['DateTime']
   updatedAt: Scalars['DateTime']
-  tasks: Array<Maybe<Task>>
+  tasks: Array<Task>
 }
 
 export type Column = {
