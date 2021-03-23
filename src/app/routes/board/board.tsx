@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { gql, useQuery } from '@apollo/client'
+import { gql, useMutation, useQuery } from '@apollo/client'
 import {
   Button,
   ButtonClear,
@@ -20,6 +20,7 @@ import { Buffer } from 'styled-icons/simple-icons'
 import { Board, Project, ProjectMap, Task, TaskMap } from 'app/types'
 import { BoardColumn } from './BoardColumn'
 import { AddCard } from './AddTask'
+import { client } from 'index'
 
 interface BoardPageData {
   board: Board
@@ -54,17 +55,43 @@ const BOARD = gql`
     }
   }
 `
+// TODO Query BOARD with input of id
+
+// https://graphql.org/learn/queries/
+// https://www.apollographql.com/docs/react/
+const SHOWBACKLOG = gql`
+  mutation ShowBacklog($id: Int!, $showBacklog: Boolean = true) {
+    __typename
+    updateBoard(input: { id: $id, showBacklog: $showBacklog }) {
+      clientMutationId
+      exampleOutput
+    }
+  }
+`
 
 var reactPress = { usermeta: { activeBoard: 123823 }, user: { id: 1 } }
 
 export function BoardPage() {
+  const [showBacklog] = useMutation(SHOWBACKLOG, {
+    update: (cache, data) => {
+      console.log({ cache, data })
+      const { board } = cache.readQuery({ query: BOARD }) ?? {}
+      console.log(query)
+      client.writeQuery({
+        query: BOARD,
+        data: {
+          board: { ...board.board, showBacklog: !board.showBacklog },
+        },
+      })
+    },
+  })
   const query = useQuery<BoardPageData, any>(BOARD)
   const editDialogFinalFocusRef = React.useRef<HTMLElement>(null)
 
   const { loading, error, data } = query
 
-  console.table(data?.board)
-  console.log(reactPress)
+  /*  console.table(data?.board)
+  console.log(reactPress) */
 
   if (loading) return <p>Loading...</p>
   if (error) return <p>Error :(</p>
@@ -77,8 +104,12 @@ export function BoardPage() {
       <PageHeader>
         <PageTitle>{board?.title}</PageTitle>
         <ToggleButton
-          isActive={board?.showBacklog}
-          onClick={(ev) => 'toggleBacklog(board, uid)'}
+          isActive={board.showBacklog}
+          onClick={() =>
+            showBacklog({
+              variables: { id: board.id, showBacklog: !board.showBacklog },
+            })
+          }
           title={board?.showBacklog ? 'Hide backlog' : 'Show backlog'}
         >
           <Buffer size="1rem" />
