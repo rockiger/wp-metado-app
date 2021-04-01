@@ -27,8 +27,8 @@ interface BoardPageData {
 }
 
 const BOARD = gql`
-  query {
-    board {
+  query Board($id: Int!) {
+    board(id: $id) {
       id
       title
       showBacklog
@@ -55,7 +55,6 @@ const BOARD = gql`
     }
   }
 `
-// TODO Query BOARD with input of id
 
 // https://graphql.org/learn/queries/
 // https://www.apollographql.com/docs/react/
@@ -69,23 +68,26 @@ const SHOWBACKLOG = gql`
   }
 `
 
-var reactPress = { usermeta: { activeBoard: 123823 }, user: { id: 1 } }
+var reactPress = { usermeta: { activeBoard: 1 }, user: { id: 1 } }
 
 export function BoardPage() {
   const [showBacklog] = useMutation(SHOWBACKLOG, {
     update: (cache, data) => {
       console.log({ cache, data })
-      const { board } = cache.readQuery({ query: BOARD }) ?? {}
+      const { board } = cache.readQuery({ query: BOARD, variables: query.variables }) ?? {}
       console.log(query)
       client.writeQuery({
         query: BOARD,
         data: {
           board: { ...board.board, showBacklog: !board.showBacklog },
         },
+        variables: query.variables
       })
     },
   })
-  const query = useQuery<BoardPageData, any>(BOARD)
+  const query = useQuery<BoardPageData, any>(BOARD, {
+    variables: { id: reactPress.usermeta.activeBoard },
+  })
   const editDialogFinalFocusRef = React.useRef<HTMLElement>(null)
 
   const { loading, error, data } = query
@@ -94,6 +96,7 @@ export function BoardPage() {
   console.log(reactPress) */
 
   if (loading) return <p>Loading...</p>
+  if (error) console.log(error)
   if (error) return <p>Error :(</p>
 
   const board = data?.board
