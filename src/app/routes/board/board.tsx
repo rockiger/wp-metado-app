@@ -62,8 +62,8 @@ const SHOWBACKLOG = gql`
   mutation ShowBacklog($id: Int!, $showBacklog: Boolean = true) {
     __typename
     updateBoard(input: { id: $id, showBacklog: $showBacklog }) {
-      clientMutationId
-      exampleOutput
+      __typename
+      id
     }
   }
 `
@@ -90,7 +90,7 @@ export function BoardPage() {
   })
   const editDialogFinalFocusRef = React.useRef<HTMLElement>(null)
 
-  const { loading, error, data } = query
+  const { loading, error, data, previousData } = query
 
   /*  console.table(data?.board)
   console.log(reactPress) */
@@ -99,7 +99,7 @@ export function BoardPage() {
   if (error) console.log(error)
   if (error) return <p>Error :(</p>
 
-  const board = data?.board
+  const board = data?.board ?? previousData?.board
   if (!board) return <p>No board</p>
 
   return (
@@ -108,9 +108,16 @@ export function BoardPage() {
         <PageTitle>{board?.title}</PageTitle>
         <ToggleButton
           isActive={board.showBacklog}
-          onClick={() =>
+          onClick={() => 
             showBacklog({
               variables: { id: board.id, showBacklog: !board.showBacklog },
+              optimisticResponse: {
+                __typename: "RootMutation",
+                 updateBoard: {
+                   __typename: "UpdateBoardPayload",
+                   id: 1
+                }
+              }
             })
           }
           title={board?.showBacklog ? 'Hide backlog' : 'Show backlog'}
